@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Local LLM Chat</title>
+</head>
+<body>
+    <h1>Llama 3.2 Chat</h1>
+    <textarea id="promptInput" rows="4" cols="50" placeholder="Ask Llama 3.2 a question..."></textarea>
+    <br>
+    <button onclick="sendMessage()">Send</button>
+    <p>Response:</p>
+    <div id="responseArea"></div>
+
+    <script>
+        async function sendMessage() {
+            const prompt = document.getElementById('promptInput').value;
+            const responseArea = document.getElementById('responseArea');
+            responseArea.innerText = 'Thinking...';
+
+            const payload = {
+                model: "llama3.2:1b",
+                messages: [
+                    {
+                        role: "user",
+                        content: prompt
+                    }
+                ],
+                stream: false
+            };
+
+            try {
+                const response = await fetch("http://localhost:11434/api/chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                responseArea.innerText = data.message.content;
+            } catch (error) {
+                console.error('Error:', error);
+                responseArea.innerText = 'An error occurred. Check the console for details.';
+            }
+        }
+    </script>
+</body>
+</html>
